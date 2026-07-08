@@ -25,7 +25,7 @@ importlib.reload(a_star)
 
 st.set_page_config(page_title="Sistema Inteligente de Rutas", layout="wide")
 
-st.title("🗺️ Sistema Inteligente de Rutas usando Grafos")
+st.title("Sistema Inteligente de Rutas usando Grafos")
 st.markdown("Proyecto 3 - Análisis de Algoritmos. Encuentra la ruta más corta entre ciudades y compara el rendimiento de los algoritmos.")
 
 # --- Session State ---
@@ -36,7 +36,7 @@ if 'selected_path' not in st.session_state:
     st.session_state.selected_path = None
 
 # --- Sidebar Controls ---
-st.sidebar.header("⚙️ Configuración")
+st.sidebar.header("Configuración")
 
 if st.sidebar.button("Generar Nuevo Grafo Aleatorio"):
     st.session_state.graph = graph_generator.generate_random_graph(10)
@@ -284,7 +284,7 @@ with col2:
             st.info("Presiona 'Generar Animación' en la barra lateral para comenzar.")
             
     else:
-        st.subheader("📊 Resultados y Tiempos")
+        st.subheader("Resultados y Tiempos")
     if hasattr(st.session_state, 'results') and st.session_state.results:
         df = pd.DataFrame(st.session_state.results)
         st.dataframe(df.drop(columns=["Ruta"]), use_container_width=True)
@@ -295,7 +295,7 @@ with col2:
         # Determinar cual algoritmo fue mas rapido
         if len(df) > 1:
             fastest_alg = df.loc[df["Tiempo (ms)"].idxmin()]["Algoritmo"]
-            st.success(f"🏆 El algoritmo más rápido fue **{fastest_alg}**")
+            st.success(f"El algoritmo más rápido fue **{fastest_alg}**")
             
         st.info(f"**Ruta encontrada:**\n{df.iloc[0]['Ruta']}")
     else:
