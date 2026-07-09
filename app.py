@@ -10,6 +10,7 @@ import importlib
 # Forzar recarga de módulos importados para evitar errores de caché
 importlib.reload(visualizer)
 importlib.reload(adapters)
+importlib.reload(graph_generator)
 import sys
 import importlib
 
@@ -22,6 +23,8 @@ floyd_warshall = importlib.import_module("floyd-warshall")
 importlib.reload(floyd_warshall)
 a_star = importlib.import_module("a-star")
 importlib.reload(a_star)
+dag_shortest_path = importlib.import_module("dag-shortest-path")
+importlib.reload(dag_shortest_path)
 
 st.set_page_config(page_title="Sistema Inteligente de Rutas", layout="wide")
 
@@ -43,6 +46,11 @@ if st.sidebar.button("Generar Nuevo Grafo Aleatorio"):
     st.session_state.selected_path = None
     st.rerun()
     
+if st.sidebar.button("Generar Nuevo Grafo DAG"):
+    st.session_state.graph = graph_generator.generate_dag_graph(10)
+    st.session_state.selected_path = None
+    st.rerun()
+    
 st.sidebar.divider()
 
 G = st.session_state.graph
@@ -61,6 +69,7 @@ if modo == "Comparar Algoritmos":
     use_bellman = st.sidebar.checkbox("Bellman-Ford", value=True)
     use_floyd = st.sidebar.checkbox("Floyd-Warshall", value=False)
     use_astar = st.sidebar.checkbox("A* (A-Star)", value=False)
+    use_dag = st.sidebar.checkbox("DAG Shortest Path", value=False)
 
     if st.sidebar.button("Calcular Rutas y Comparar", type="primary"):
         if origen == destino:
@@ -174,13 +183,46 @@ if modo == "Comparar Algoritmos":
                     "Costo": costo if costo != a_star.INF else "Inalcanzable",
                     "Ruta": " -> ".join([node_options[n] for n in camino]) if camino else "Sin ruta"
             })
+
+            # --- DAG Shortest Path ---
+            if use_dag:
+                start_time = time.perf_counter()
+                V, aristas = adapters.nx_to_dag(G)
+                dist, padre = dag_shortest_path.dag_shortest_path(V, origen, aristas)
+                end_time = time.perf_counter()
+            
+                if dist is None:
+                    st.error("El grafo contiene ciclos. DAG Shortest Path requiere un grafo acíclico.")
+                else:
+                    costo = dist[destino]
+                    camino = []
+                    if costo != dag_shortest_path.INF:
+                        nodo = destino
+                        while nodo != -1 and nodo != origen:
+                            camino.append(nodo)
+                            nodo = padre[nodo]
+                        if nodo == origen:
+                            camino.append(origen)
+                            camino.reverse()
+                        else:
+                            camino = []
+                        
+                    if not path_to_draw and camino:
+                        path_to_draw = camino
+                    
+                    results.append({
+                        "Algoritmo": "DAG",
+                        "Tiempo (ms)": (end_time - start_time) * 1000,
+                        "Costo": costo if costo != dag_shortest_path.INF else "Inalcanzable",
+                        "Ruta": " -> ".join([node_options[n] for n in camino]) if camino else "Sin ruta"
+                    })
             
         st.session_state.results = results
         st.session_state.selected_path = path_to_draw
 
 if modo == "Animación Paso a Paso":
     st.sidebar.subheader("Seleccionar Algoritmo para Animar")
-    algo_anim = st.sidebar.selectbox("Algoritmo", ["Dijkstra", "Bellman-Ford", "Floyd-Warshall", "A* (A-Star)"])
+    algo_anim = st.sidebar.selectbox("Algoritmo", ["Dijkstra", "Bellman-Ford", "Floyd-Warshall", "A* (A-Star)", "DAG Shortest Path"])
     
     if st.sidebar.button("Generar Animación", type="primary"):
         if origen == destino:
@@ -198,6 +240,14 @@ if modo == "Animación Paso a Paso":
             elif algo_anim == "A* (A-Star)":
                 grafo_astar, coord = adapters.nx_to_astar(G)
                 _, _, historial = a_star.aEstrella(origen, destino, grafo_astar, coord, guardar_historial=True)
+            elif algo_anim == "DAG Shortest Path":
+                V, aristas = adapters.nx_to_dag(G)
+                res_dist, _, historial_dag = dag_shortest_path.dag_shortest_path(V, origen, aristas, guardar_historial=True)
+                if res_dist is None:
+                    st.error("El grafo contiene ciclos. No se puede animar DAG Shortest Path.")
+                    historial = []
+                else:
+                    historial = historial_dag
                 
             st.session_state.historial = historial
             st.session_state.anim_paso = 0

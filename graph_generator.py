@@ -28,3 +28,26 @@ def generate_random_graph(num_nodes=10, prob_edge=0.15, max_weight=20):
         G.nodes[node]['y'] = float(coords[1]) * 500
         
     return G
+
+def generate_dag_graph(num_nodes=10, prob_edge=0.15, max_weight=20):
+    G = nx.DiGraph()
+    
+    for i in range(num_nodes):
+        G.add_node(i, label=chr(65 + i))
+        
+    for i in range(num_nodes):
+        for j in range(i + 1, num_nodes):
+            if random.random() < prob_edge:
+                weight = random.randint(1, max_weight)
+                G.add_edge(i, j, weight=weight)
+                
+    for i in range(num_nodes - 1):
+        if not G.has_edge(i, i+1):
+            G.add_edge(i, i+1, weight=random.randint(1, max_weight))
+            
+    pos = nx.spring_layout(G, seed=42)
+    for node, coords in pos.items():
+        G.nodes[node]['x'] = float(coords[0]) * 500
+        G.nodes[node]['y'] = float(coords[1]) * 500
+        
+    return G

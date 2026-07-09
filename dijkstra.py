@@ -60,8 +60,8 @@ class Grafo:
         predecesor = [-1] * self.total_nodos
         distancias[nodo_origen] = 0
         
-        print("Estado inicial:")
-        self.imprimir_estado(distancias, visitado)
+        # print("Estado inicial:")
+        # self.imprimir_estado(distancias, visitado)
         
         historial = []
         
@@ -95,9 +95,9 @@ class Grafo:
             visitado[nodo_actual] = True
             capturar_estado(nodo_actual)
             
-            print(f"\n--- Iteracion {iteracion}: Procesando nodo "
-                  f"{self.nombre_del_nodo(nodo_actual)} "
-                  f"(distancia = {distancias[nodo_actual]}) ---")
+            # print(f"\n--- Iteracion {iteracion}: Procesando nodo "
+            #       f"{self.nombre_del_nodo(nodo_actual)} "
+            #       f"(distancia = {distancias[nodo_actual]}) ---")
             
             for vecino in range(self.total_nodos):
                 peso_arista = self.matriz[nodo_actual][vecino]
@@ -111,27 +111,27 @@ class Grafo:
                     
                     if nueva_distancia < distancias[vecino]:
                         distancia_anterior = "INF" if distancias[vecino] == INFINITO else str(distancias[vecino])
-                        print(f"  {self.nombre_del_nodo(nodo_actual)}"
-                              f" -> {self.nombre_del_nodo(vecino)}"
-                              f" : {distancias[nodo_actual]} + {peso_arista}"
-                              f" = {nueva_distancia}"
-                              f" < {distancia_anterior}"
-                              f"  =>  distancia[{self.nombre_del_nodo(vecino)}] = {nueva_distancia}")
+                        # print(f"  {self.nombre_del_nodo(nodo_actual)}"
+                        #       f" -> {self.nombre_del_nodo(vecino)}"
+                        #       f" : {distancias[nodo_actual]} + {peso_arista}"
+                        #       f" = {nueva_distancia}"
+                        #       f" < {distancia_anterior}"
+                        #       f"  =>  distancia[{self.nombre_del_nodo(vecino)}] = {nueva_distancia}")
                         distancias[vecino] = nueva_distancia
                         predecesor[vecino] = nodo_actual
                         capturar_estado(nodo_actual, (nodo_actual, vecino))
-            self.imprimir_estado(distancias, visitado)
+            # self.imprimir_estado(distancias, visitado)
         # =============================================
         # PASO 3: MOSTRAR RESULTADOS
         # =============================================
-        print("\n===================================================")
-        print("  RESULTADO FINAL")
-        print("===================================================\n")
-        print("Nodo    Distancia    Camino mas corto")
-        print("----    ---------    ----------------")
-        for i in range(self.total_nodos):
-            camino = self.reconstruir_camino(predecesor, nodo_origen, i)
-            print(f" {self.nombre_del_nodo(i)}         {distancias[i]}          {camino}")
+        # print("\n===================================================")
+        # print("  RESULTADO FINAL")
+        # print("===================================================\n")
+        # print("Nodo    Distancia    Camino mas corto")
+        # print("----    ---------    ----------------")
+        # for i in range(self.total_nodos):
+        #     camino = self.reconstruir_camino(predecesor, nodo_origen, i)
+        #     # print(f" {self.nombre_del_nodo(i)}         {distancias[i]}          {camino}")
             
         if guardar_historial:
             capturar_estado()

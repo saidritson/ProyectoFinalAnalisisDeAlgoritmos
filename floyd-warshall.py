@@ -57,7 +57,7 @@ def floyd_warshall(graph, guardar_historial=False):
     # nxt[i][j] guardará el siguiente nodo en el camino más corto desde i hasta j.
     nxt = [[-1 if graph[i][j] == INF or i == j else j for j in range(V)] for i in range(V)]
     
-    print_matrix(dist, "Matriz Inicial (k = -1)")
+    # print_matrix(dist, "Matriz Inicial (k = -1)")
     capturar_estado(-1, -1, -1)
     
     # 2. Iteración sobre nodos puente (k)
@@ -71,7 +71,7 @@ def floyd_warshall(graph, guardar_historial=False):
                     nxt[i][j] = nxt[i][k]
                     capturar_estado(k, i, j)
                     
-        print_matrix(dist, f"Iteración k = {k}")
+        # print_matrix(dist, f"Iteración k = {k}")
 
     if guardar_historial:
         return dist, nxt, historial

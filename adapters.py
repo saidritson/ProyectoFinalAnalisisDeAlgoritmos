@@ -38,3 +38,11 @@ def nx_to_astar(G):
         grafo[u][v] = data['weight']
     
     return grafo, coordenadas
+
+def nx_to_dag(G):
+    import importlib
+    dag_shortest_path = importlib.import_module("dag-shortest-path")
+    aristas = []
+    for u, v, data in G.edges(data=True):
+        aristas.append(dag_shortest_path.arista(u, v, data['weight']))
+    return G.number_of_nodes(), aristas
